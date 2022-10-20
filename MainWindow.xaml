@@ -1,0 +1,15 @@
+﻿<Window x:Class="Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Launcher"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Button x:Name="Launch" Content="Play" HorizontalAlignment="Left" Margin="35,312,0,0" VerticalAlignment="Top" Height="73" Width="207" Click="LaunchGame" FontSize="18"/>
+        <ProgressBar x:Name="InstallProgressBar" HorizontalAlignment="Left" Height="21" Margin="38,278,0,0" VerticalAlignment="Top" Width="204" Minimum="0" Maximum="100"/>
+        <TextBlock x:Name="d" HorizontalAlignment="Left" Margin="358,78,0,0" Text="TextBlock" TextWrapping="Wrap" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>
