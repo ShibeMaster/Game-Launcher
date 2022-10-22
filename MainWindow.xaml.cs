@@ -72,11 +72,11 @@ namespace Launcher
         public MainWindow()
         {
             InitializeComponent();
+            RunStartupChecks();
             d.Text = LauncherExecutablePath;
             VersionData data = VersionData;
             data.LauncherPath = AppDomain.CurrentDomain.BaseDirectory;
             VersionData = data;
-            RunStartupChecks();
         }
         public void RunStartupChecks()
         {
@@ -140,8 +140,12 @@ namespace Launcher
         }
         public async void UpdateLauncher()
         {
-            Process.Start(LauncherUpdaterPath);
-            Close();
+            FileInfo launcherUpdaterFile = new FileInfo(LauncherUpdaterPath);
+            Process updateHandler = new Process();
+            d.Text = launcherUpdaterFile.FullName;
+            updateHandler.StartInfo.FileName = launcherUpdaterFile.FullName;
+            updateHandler.StartInfo.WorkingDirectory = launcherUpdaterFile.DirectoryName;
+            updateHandler.Start();
         }
 
         private void Client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
@@ -164,6 +168,7 @@ namespace Launcher
                 case LauncherStatus.require_game_install: Install(); break;
                 case LauncherStatus.ready:
                     Process.Start(GameExecutablePath + "\\" + GameTitle + ".exe");
+                    Environment.Exit(0);
                     break;
             }
         }
