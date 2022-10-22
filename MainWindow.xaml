@@ -7,9 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button x:Name="Launch" Content="Play" HorizontalAlignment="Left" Margin="35,312,0,0" VerticalAlignment="Top" Height="73" Width="207" Click="LaunchGame" FontSize="18"/>
-        <ProgressBar x:Name="InstallProgressBar" HorizontalAlignment="Left" Height="21" Margin="38,278,0,0" VerticalAlignment="Top" Width="204" Minimum="0" Maximum="100"/>
-        <TextBlock x:Name="d" HorizontalAlignment="Left" Margin="358,78,0,0" Text="TextBlock" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <Rectangle HorizontalAlignment="Center" Height="127" Margin="0,307,0,0" VerticalAlignment="Top" Width="800" Fill="#FFD4D4D4"/>
+
+        <Button x:Name="Launch" Content="Loading" HorizontalAlignment="Center" Margin="0,254,0,0" VerticalAlignment="Top" Height="92" Width="244" Click="LaunchGame" FontSize="18" IsDefault="True" IsEnabled="False"/>
+        <TextBlock x:Name="LauncherVersionText" HorizontalAlignment="Left" Margin="745,390,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Segoe UI" Foreground="Black" Text="v0.1"/>
+        <TextBlock x:Name="GameVersionText" HorizontalAlignment="Center" Margin="0,364,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="136" TextAlignment="Center" FontSize="14"><Run Text="Installed Version"/><Run Language="en-au" Text=" Text"/></TextBlock>
 
     </Grid>
 </Window>

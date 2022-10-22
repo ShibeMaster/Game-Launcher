@@ -9,6 +9,7 @@ using System.Net;
 using System.IO.Compression;
 using System.Diagnostics;
 using System.Reflection;
+using System.Windows.Media.Effects;
 
 namespace Launcher
 {
@@ -73,10 +74,10 @@ namespace Launcher
         {
             InitializeComponent();
             RunStartupChecks();
-            d.Text = LauncherExecutablePath;
             VersionData data = VersionData;
             data.LauncherPath = AppDomain.CurrentDomain.BaseDirectory;
             VersionData = data;
+
         }
         public void RunStartupChecks()
         {
@@ -85,10 +86,14 @@ namespace Launcher
             Directory.CreateDirectory(GamePath);
             if (!File.Exists(LauncherUpdaterPath))
             {
+                DownloadingWindow window = new DownloadingWindow("Installing Updater");
                 WebClient client = new WebClient();
                 var address = new Uri(DriveUpdaterLink);
-                client.DownloadProgressChanged += Client_DownloadProgressChanged;
+                client.DownloadProgressChanged += window.OnProgressChanged;
                 client.DownloadFileAsync(address, LauncherUpdaterPath);
+                Effect = new BlurEffect();
+                window.ShowDialog();
+                Effect = null;
             }
             VerifyVersion();
             initialized = true;
@@ -98,12 +103,14 @@ namespace Launcher
         public async void VerifyVersion()
         {
             var version = await GetLatestVersionData();
+            LauncherVersionText.Text = "v" + VersionData.LauncherVersion;
+            GameVersionText.Text = "Installed Version\n" + VersionData.GameVersion;
             if (version.LauncherVersion != VersionData.LauncherVersion)
             {
                 Launch.Content = "Update Launcher";
                 status = LauncherStatus.require_self_update;
             }
-            else if(VersionData.GameVersion == "")
+            else if (VersionData.GameVersion == "")
             {
                 Launch.Content = "Install";
                 status = LauncherStatus.require_game_install;
@@ -114,7 +121,11 @@ namespace Launcher
                 status = LauncherStatus.require_game_update;
             }
             else
+            {
+                Launch.Content = "Launch";
                 status = LauncherStatus.ready;
+            }
+            Launch.IsEnabled = true;
 
         }
         public async Task<VersionData> GetLatestVersionData()
@@ -127,13 +138,18 @@ namespace Launcher
         }
         public async void Install()
         {
+
+            DownloadingWindow window = new DownloadingWindow("Installing");
             WebClient client = new WebClient();
             var address = new Uri(DriveGameLink);
-            client.DownloadProgressChanged += Client_DownloadProgressChanged;
-            client.DownloadFileCompleted += Client_DownloadFileCompleted;
+            client.DownloadProgressChanged += window.OnProgressChanged;
+            client.DownloadFileCompleted += DownloadFileCompleted;
             if(Directory.Exists(GameExecutablePath))
-                Directory.Delete(GameExecutablePath);
+                Directory.Delete(GameExecutablePath, true);
             client.DownloadFileAsync(address, DownloadedGamePath);
+            Effect = new BlurEffect();
+            window.ShowDialog();
+            Effect = null;
             VersionData data = await GetLatestVersionData();
             VersionData = data;
             RunStartupChecks();
@@ -142,23 +158,16 @@ namespace Launcher
         {
             FileInfo launcherUpdaterFile = new FileInfo(LauncherUpdaterPath);
             Process updateHandler = new Process();
-            d.Text = launcherUpdaterFile.FullName;
             updateHandler.StartInfo.FileName = launcherUpdaterFile.FullName;
             updateHandler.StartInfo.WorkingDirectory = launcherUpdaterFile.DirectoryName;
             updateHandler.Start();
         }
 
-        private void Client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        private void DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             ZipFile.ExtractToDirectory(DownloadedGamePath, GameExecutablePath);
             File.Delete(DownloadedGamePath);
         }
-
-        private void Client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            InstallProgressBar.Value = e.ProgressPercentage;
-        }
-
         private void LaunchGame(object sender, RoutedEventArgs e)
         {
             switch (status)
